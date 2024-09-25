@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/langRelation.iml" filepath="$PROJECT_DIR$/.idea/langRelation.iml" />
+      <module fileurl="file://$PROJECT_DIR$/lrModule/lrModule.iml" filepath="$PROJECT_DIR$/lrModule/lrModule.iml" />
+      <module fileurl="file://$PROJECT_DIR$/src/src.iml" filepath="$PROJECT_DIR$/src/src.iml" />
+    </modules>
+  </component>
+</project>
