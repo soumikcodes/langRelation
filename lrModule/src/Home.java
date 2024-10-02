@@ -11,7 +11,7 @@ public class Home {
         frame = new JFrame("Home");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLayout(new BorderLayout());
-        frame.setPreferredSize(new Dimension(1600, 1200));
+        frame.setPreferredSize(new Dimension(800, 600));
         frame.setMinimumSize(new Dimension(800, 400));
 
         Menu radialMenu = new Menu();
