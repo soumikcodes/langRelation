@@ -5,7 +5,6 @@ import java.awt.event.ActionListener;
 
 public class Home {
     private JFrame frame;
-    private JPanel graphPanelContainer;
     private JLabel statusBar;
 
     public Home() {
@@ -15,11 +14,11 @@ public class Home {
         frame.setPreferredSize(new Dimension(1600, 1200));
         frame.setMinimumSize(new Dimension(800, 400));
 
+        Menu radialMenu = new Menu();
+        frame.add(radialMenu, BorderLayout.CENTER);
+
         statusBar = new JLabel();
         frame.add(statusBar, BorderLayout.SOUTH);
-
-        graphPanelContainer = new JPanel();
-        frame.add(graphPanelContainer, BorderLayout.CENTER);
 
         createMenuBar();
 
@@ -52,15 +51,7 @@ public class Home {
     }
 
     private void addLanguage() {
-        graphPanelContainer.removeAll();
-//        statusBar.setText("Add language");
         TemplateGS gs = new TemplateGS();
-//        gs.drawGS();
-//        JPanel graphPanel = gs.getGraphPanel();
-
-//        graphPanelContainer.add(graphPanel, BorderLayout.CENTER);
-        graphPanelContainer.revalidate();
-        graphPanelContainer.repaint();
 
         statusBar.setText("Graph added.");
     }
