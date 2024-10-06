@@ -1,4 +1,7 @@
 import javax.swing.*;
+
+import javafx.embed.swing.JFXPanel;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -51,7 +54,14 @@ public class Home {
     }
 
     private void addLanguage() {
-        TemplateGS gs = new TemplateGS();
+//        TemplateGS gs = new TemplateGS();
+//        gs.drawGS(frame);
+        
+        final JFXPanel fxPanel = new JFXPanel();
+        fxPanel.setBackground(Color.GRAY);
+        frame.add(fxPanel, BorderLayout.CENTER);
+        GraphApp graph = new GraphApp();
+        graph.addGrpah(fxPanel);
 
         statusBar.setText("Graph added.");
     }
