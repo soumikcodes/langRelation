@@ -1,6 +1,8 @@
+import javafx.embed.swing.JFXPanel;
+
 import javax.swing.*;
 
-import javafx.embed.swing.JFXPanel;
+//import javafx.embed.swing.JFXPanel;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -12,53 +14,35 @@ public class Home {
 
     public Home() {
         frame = new JFrame("Home");
+        frame.getContentPane().setBackground(Color.WHITE);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLayout(new BorderLayout());
         frame.setPreferredSize(new Dimension(800, 600));
         frame.setMinimumSize(new Dimension(800, 400));
 
-        Menu radialMenu = new Menu();
-        frame.add(radialMenu, BorderLayout.CENTER);
+        JPanel menuPanel = new JPanel(new BorderLayout());
+        menuPanel.setBackground(Color.WHITE);
+        menuPanel.setPreferredSize(new Dimension(800, 150)); // about 30% of window height
+
+        Menu radialMenu = new Menu(this::addLanguage);
+        menuPanel.add(radialMenu, BorderLayout.CENTER);
+
+        frame.add(menuPanel, BorderLayout.NORTH);
+
 
         statusBar = new JLabel();
         frame.add(statusBar, BorderLayout.SOUTH);
-
-        createMenuBar();
 
         frame.pack();
         frame.setVisible(true);
     }
 
-    private void createMenuBar() {
-        JMenuBar menuBar = new JMenuBar();
-        frame.setJMenuBar(menuBar);
-
-        JMenu fileMenu = getAddNodeMenu();
-        menuBar.add(fileMenu);
-    }
-
-    private JMenu getAddNodeMenu() {
-        JMenu fileMenu = new JMenu("Menu");
-        JMenuItem addItem = new JMenuItem("Add Language");
-
-        addItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                addLanguage();
-            }
-        });
-
-        fileMenu.add(addItem);
-
-        return fileMenu;
-    }
-
-    private void addLanguage() {
+    public void addLanguage() {
 //        TemplateGS gs = new TemplateGS();
 //        gs.drawGS(frame);
-        
+
         final JFXPanel fxPanel = new JFXPanel();
-        fxPanel.setBackground(Color.GRAY);
+//        fxPanel.setBackground(Color.GRAY);
         frame.add(fxPanel, BorderLayout.CENTER);
         GraphApp graph = new GraphApp();
         graph.addGrpah(fxPanel);
