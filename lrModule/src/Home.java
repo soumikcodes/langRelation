@@ -11,6 +11,8 @@ import java.awt.event.ActionListener;
 public class Home {
     private JFrame frame;
     private JLabel statusBar;
+    final JFXPanel fxPanel = new JFXPanel();
+    GraphApp graph = new GraphApp();
 
     public Home() {
         frame = new JFrame("Home");
@@ -29,7 +31,6 @@ public class Home {
 
         frame.add(menuPanel, BorderLayout.NORTH);
 
-
         statusBar = new JLabel();
         frame.add(statusBar, BorderLayout.SOUTH);
 
@@ -38,14 +39,8 @@ public class Home {
     }
 
     public void addLanguage() {
-//        TemplateGS gs = new TemplateGS();
-//        gs.drawGS(frame);
-
-        final JFXPanel fxPanel = new JFXPanel();
-//        fxPanel.setBackground(Color.GRAY);
         frame.add(fxPanel, BorderLayout.CENTER);
-        GraphApp graph = new GraphApp();
-        graph.addGrpah(fxPanel);
+        graph.addNode(fxPanel);
 
         statusBar.setText("Graph added.");
     }
