@@ -19,7 +19,6 @@ public class GraphApp extends Application {
     public GraphApp() {
         root = new Pane();
         root.setPrefSize(800, 600);
-        root.getChildren().forEach(this::makeDraggable);
     }
 
     @Override
@@ -27,18 +26,22 @@ public class GraphApp extends Application {
     	stage.setTitle("Language Relation");
     }
     
+    // Method to generate a random color
+    private Color randomColor() {
+        double red = Math.random();
+        double green = Math.random();
+        double blue = Math.random();
+        return new Color(red, green, blue, 1.0); // Fully opaque color
+    }
+    
     public void addNode(JFXPanel fxPanel) {
+    	
     	// Create a new LanguageNode each time this method is called
-        LanguageNode newNode = new LanguageNode(25, Color.YELLOW, "IE");
-        LanguageNode newNode1 = new LanguageNode(25, Color.GREEN, "IE");
-        
-        // Set initial position
-        newNode.relocate(Math.random() * 50, Math.random() * 150);
-        newNode1.relocate(Math.random() * 50, Math.random() * 150);
-        
+        LanguageNode newNode = new LanguageNode(25, Math.random() * 50, randomColor(), "IE");
+
         // Add the new node to the pane
-        root.getChildren().addAll(newNode, newNode1);
-        root.getChildren().forEach(this::makeDraggable);
+        root.getChildren().addAll(newNode);
+        makeDraggable(newNode);
         
         // Add the connection line to the pane if not already added
         if (!root.getChildren().contains(connectionLine)) {
@@ -51,8 +54,12 @@ public class GraphApp extends Application {
         if (fxPanel.getScene() == null) {
             fxPanel.setScene(new Scene(root));
         }
-        System.out.println(root.getChildren().size());
-//        System.out.println(newNode.getLayoutBounds());
+        System.out.println("Number of children: " + root.getChildren().size());
+        
+//        newNode.setOnMouseClicked(e -> {
+//        	if(e.getClickCount() == 1)
+//        		addNode(fxPanel);
+//        });
     }
 
     private void makeDraggable(Node node) {

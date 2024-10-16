@@ -135,7 +135,6 @@ public class Menu extends JComponent {
                 if (overMenu != isMouseOver || (hoverIndex == 0) == isHoverOverPlus) {
                     isMouseOver = overMenu;
                     repaint();
-                    System.out.println("repainted");
                 }
             }
         });
