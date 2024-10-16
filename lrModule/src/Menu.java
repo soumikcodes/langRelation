@@ -54,6 +54,9 @@ public class Menu extends JComponent {
     private Color colorHover;
     private Color iconColor;
     private Color iconHoverColor;
+    private int plusIndex;
+    private float menuAngle = -150f;
+    private int startingAngle = 60;
 
     private final List<RadialItem> items = new ArrayList<>();
 
@@ -89,13 +92,13 @@ public class Menu extends JComponent {
         animator.setDeceleration(0.5f);
 
         RadialItem languageItem = new RadialItem(null, new Color(230, 130, 240));
-
         languageItem.setAction(addLanguageAction);
 
-        addItem(languageItem);
-        addItem(new RadialItem(null, new Color(156, 140, 245)));
         addItem(new RadialItem(null, new Color(245, 209, 140)));
+        addItem(languageItem);
         addItem(new RadialItem(null, new Color(140, 245, 146)));
+
+        plusIndex = items.indexOf(languageItem);
 
         addMouseListener(new MouseAdapter() {
             @Override
@@ -124,7 +127,9 @@ public class Menu extends JComponent {
                 boolean overMenu = isMouseOverMenu(e);
                 int hoverIndex = isMouseOverItem(e);
 
-                isHoverOverPlus = (hoverIndex == 0);
+                if (hoverIndex >= 0) {
+                    isHoverOverPlus = (hoverIndex == plusIndex);
+                }
 
                 if (overMenu || hoverIndex >= 0) {
                     setCursor(new Cursor(Cursor.HAND_CURSOR));
@@ -132,10 +137,9 @@ public class Menu extends JComponent {
                     setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
                 }
 
-                if (overMenu != isMouseOver || (hoverIndex == 0) == isHoverOverPlus) {
+                if (overMenu != isMouseOver || (hoverIndex == plusIndex) == isHoverOverPlus) {
                     isMouseOver = overMenu;
                     repaint();
-                    System.out.println("repainted");
                 }
             }
         });
@@ -146,24 +150,26 @@ public class Menu extends JComponent {
 
     @Override
     public void paintComponent(Graphics grphcs) {
-        super.paintComponent(grphcs);
         Graphics2D g2 = (Graphics2D) grphcs;
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         if (!items.isEmpty()) {
             int width = getWidth();
             int height = getHeight();
+
             int size = (int) ((Math.min(width, height) / 2) - (itemSize / 1.5f));
+
             int centerX = width / 2;
             int centerY = height / 2;
-            float anglePerItem = 360f / items.size();
+
+            float anglePerItem = menuAngle / items.size();
 
             for (int i = 0; i < items.size(); i++) {
                 RadialItem item = items.get(i);
-                float angle = 90 + i * anglePerItem;
+                float angle = startingAngle + i * anglePerItem;
                 Point location = toLocation(angle, size * animateSize);
 
-                if (i == 0 && isHoverOverPlus) {
+                if (i == plusIndex && isHoverOverPlus) {
                     g2.setColor(iconHoverColor);
                 } else {
                     g2.setColor(item.getColor());
@@ -180,7 +186,7 @@ public class Menu extends JComponent {
 //                g2.drawImage(toImage(item.getIcon()), iconX, iconY, null);
 
                 // add "plus"
-                if (i == 0) {
+                if (i == plusIndex) {
                     int plusSize = itemSize / 4;
                     float thickness = 3.0f;
 
@@ -240,12 +246,6 @@ public class Menu extends JComponent {
         g2.drawLine(lineX, lineY, lineX + lineSize, lineY);
     }
 
-    private Point toLocation(float angle, double size) {
-        int x = (int) (Math.cos(Math.toRadians(angle)) * size);
-        int y = (int) (Math.sin(Math.toRadians(angle)) * size);
-        return new Point(x,y);
-    }
-
     private boolean isMouseOverMenu(MouseEvent e) {
         int width = getWidth();
         int height = getHeight();
@@ -256,17 +256,21 @@ public class Menu extends JComponent {
     }
 
     private int isMouseOverItem(MouseEvent e) {
-        int index = 1;
+        int index = -1;
         if (isShowing) {
             int width = getWidth();
             int height = getHeight();
+
             int centerX = width / 2;
             int centerY = height / 2;
-            float anglePerItem = 360f / items.size();
+
+            float anglePerItem = menuAngle / items.size();
+
             int size = (int) ((Math.min(width, height) / 2) - (itemSize / 1.5f));
 
             for (int i = 0; i < items.size(); i++) {
-                float angle = 90 + i * anglePerItem;
+                float angle = startingAngle + i * anglePerItem;
+
                 Point location = toLocation(angle, size * 1f);
                 int itemX = centerX + location.x - itemSize / 2;
                 int itemY = centerY + location.y - itemSize / 2;
@@ -277,6 +281,12 @@ public class Menu extends JComponent {
             }
         }
         return index;
+    }
+
+    private Point toLocation(float angle, double size) {
+        int x = (int) (Math.cos(Math.toRadians(angle)) * size);
+        int y = (int) (Math.sin(Math.toRadians(angle)) * size);
+        return new Point(x,y);
     }
 
     public void addItem(RadialItem item) {

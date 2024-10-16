@@ -22,14 +22,18 @@ public class Home {
         frame.setPreferredSize(new Dimension(800, 600));
         frame.setMinimumSize(new Dimension(800, 400));
 
+        Menu radialMenu = new Menu(this::addLanguage);
+
         JPanel menuPanel = new JPanel(new BorderLayout());
         menuPanel.setBackground(Color.WHITE);
-        menuPanel.setPreferredSize(new Dimension(800, 150)); // about 30% of window height
-
-        Menu radialMenu = new Menu(this::addLanguage);
+        menuPanel.setPreferredSize(new Dimension(150, 150));
         menuPanel.add(radialMenu, BorderLayout.CENTER);
 
-        frame.add(menuPanel, BorderLayout.NORTH);
+        JPanel leftPanel = new JPanel(new BorderLayout());
+        leftPanel.setPreferredSize(new Dimension(800, 150));
+        leftPanel.setBackground(Color.WHITE);
+        leftPanel.add(menuPanel, BorderLayout.WEST);
+        frame.add(leftPanel, BorderLayout.NORTH);
 
         statusBar = new JLabel();
         frame.add(statusBar, BorderLayout.SOUTH);
