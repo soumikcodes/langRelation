@@ -61,6 +61,10 @@ public class Menu extends JComponent {
 
     private final List<RadialItem> items = new ArrayList<>();
 
+    private Timer closeTimer;
+    private final int delay = 100;
+
+
     public Menu(Home home, Runnable addLanguageAction) {
         this.home = home;
 
@@ -148,13 +152,35 @@ public class Menu extends JComponent {
 
                 if (overMenu || hoverIndex >= 0) {
                     setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+                    if (closeTimer != null && closeTimer.isRunning()) {
+                        closeTimer.stop();
+                    }
+
+                    if (!animator.isRunning() && !isShowing) {
+                        animator.start();
+                    }
                 } else {
                     setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-                }
+                    if (!animator.isRunning() && isShowing) {
+                        if (closeTimer == null) {
+                            closeTimer = new Timer(delay, event -> {
+                                // Ensure menu is still open when timer completes
+                                if (isShowing) {
+                                    animator.start();
+                                }
+                            });
+                            closeTimer.setRepeats(false); // Only execute once
+                        }
 
-                if (overMenu != isMouseOver || (hoverIndex == plusIndex) == isHoverOverPlus) {
-                    isMouseOver = overMenu;
-                    repaint();
+                        // Start or restart the timer
+                        closeTimer.restart();
+                    }
+
+                    if (overMenu != isMouseOver || (hoverIndex == plusIndex) == isHoverOverPlus) {
+                        isMouseOver = overMenu;
+                        repaint();
+                    }
                 }
             }
         });
@@ -311,4 +337,5 @@ public class Menu extends JComponent {
     public Image toImage(Icon icon) {
         return ((ImageIcon) icon).getImage();
     }
+
 }
