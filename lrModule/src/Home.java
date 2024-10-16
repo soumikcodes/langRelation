@@ -53,16 +53,20 @@ public class Home {
         JPopupMenu dropdownMenu = new JPopupMenu();
 
         JMenuItem english = new JMenuItem("English");
+        JMenuItem english1 = new JMenuItem("English");
+        JMenuItem english2 = new JMenuItem("English");
         JMenuItem spanish = new JMenuItem("Spanish");
         JMenuItem german = new JMenuItem("German");
 
         dropdownMenu.add(english);
+        dropdownMenu.add(english1);
+        dropdownMenu.add(english2);
         dropdownMenu.add(spanish);
         dropdownMenu.add(german);
 
-        english.addActionListener(e -> System.out.println("English selected"));
-        spanish.addActionListener(e -> System.out.println("Spanish selected"));
-        german.addActionListener(e -> System.out.println("German selected"));
+        english.addActionListener(e -> addLanguage());
+        spanish.addActionListener(e -> addLanguage());
+        german.addActionListener(e -> addLanguage());
 
         dropdownMenu.show(frame, x, y);
     }
