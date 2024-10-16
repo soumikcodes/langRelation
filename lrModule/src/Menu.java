@@ -89,6 +89,9 @@ public class Menu extends JComponent {
           @Override
             public void end() {
                 isShowing = !isShowing;
+                if (!isShowing) {
+                    home.dropdownHide();
+                }
             }
         };
 
@@ -160,6 +163,12 @@ public class Menu extends JComponent {
                     if (!animator.isRunning() && !isShowing) {
                         animator.start();
                     }
+
+                    if (hoverIndex == plusIndex) {
+                        Point point = calculatePlusButtonLocation();
+                        home.showDropdownMenu(point.x, point.y);
+                    }
+
                 } else {
                     setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
                     if (!animator.isRunning() && isShowing) {
@@ -336,6 +345,18 @@ public class Menu extends JComponent {
 
     public Image toImage(Icon icon) {
         return ((ImageIcon) icon).getImage();
+    }
+
+    private Point calculatePlusButtonLocation() {
+        int width = getWidth();
+        int height = getHeight();
+        int size = (int) ((Math.min(width, height) / 2) - (itemSize / 1.5f));
+        float anglePerItem = menuAngle / items.size();
+        float angle = startingAngle + plusIndex * anglePerItem;
+        Point location = toLocation(angle, size * animateSize);
+        int screenX = (width / 2) + location.x;
+        int screenY = (height / 2) + location.y + itemSize; // Adjust y to position below the "plus" button
+        return new Point(screenX, screenY);
     }
 
 }
