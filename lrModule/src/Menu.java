@@ -14,6 +14,7 @@ import static javax.swing.text.StyleConstants.setIcon;
 
 
 public class Menu extends JComponent {
+    private Home home;
 
     public void setColorHover(Color colorHover) {
         this.colorHover = colorHover;
@@ -60,7 +61,8 @@ public class Menu extends JComponent {
 
     private final List<RadialItem> items = new ArrayList<>();
 
-    public Menu(Runnable addLanguageAction) {
+    public Menu(Home home, Runnable addLanguageAction) {
+        this.home = home;
 
         setBackground(new Color(20, 176, 211));
         setForeground(new Color(250, 250, 250));
@@ -110,7 +112,20 @@ public class Menu extends JComponent {
                             animator.start();
                         }
                     } else if (isHoverOverPlus) {
-                        languageItem.performAction();
+//                        languageItem.performAction();
+//                        home.addLanguage();
+
+                        int width = getWidth();
+                        int height = getHeight();
+                        int size = (int) ((Math.min(width, height) / 2) - (itemSize / 1.5f));
+                        float anglePerItem = menuAngle / items.size();
+                        float angle = startingAngle + plusIndex * anglePerItem;
+                        Point location = toLocation(angle, size * animateSize);
+
+                        int screenX = getLocationOnScreen().x + (width / 2) + location.x;
+                        int screenY = getLocationOnScreen().y + (height / 2) + location.y;
+
+                        home.showDropdownMenu(screenX, screenY);
                     } else {
                         int index = isMouseOverItem(e);
                         if (index >= 0) {

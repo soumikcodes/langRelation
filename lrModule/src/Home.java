@@ -22,7 +22,7 @@ public class Home {
         frame.setPreferredSize(new Dimension(800, 600));
         frame.setMinimumSize(new Dimension(800, 400));
 
-        Menu radialMenu = new Menu(this::addLanguage);
+        Menu radialMenu = new Menu(this, this::addLanguage);
 
         JPanel menuPanel = new JPanel(new BorderLayout());
         menuPanel.setBackground(Color.WHITE);
@@ -48,4 +48,23 @@ public class Home {
 
         statusBar.setText("Graph added.");
     }
+
+    public void showDropdownMenu(int x, int y) {
+        JPopupMenu dropdownMenu = new JPopupMenu();
+
+        JMenuItem english = new JMenuItem("English");
+        JMenuItem spanish = new JMenuItem("Spanish");
+        JMenuItem german = new JMenuItem("German");
+
+        dropdownMenu.add(english);
+        dropdownMenu.add(spanish);
+        dropdownMenu.add(german);
+
+        english.addActionListener(e -> System.out.println("English selected"));
+        spanish.addActionListener(e -> System.out.println("Spanish selected"));
+        german.addActionListener(e -> System.out.println("German selected"));
+
+        dropdownMenu.show(frame, x, y);
+    }
+
 }
