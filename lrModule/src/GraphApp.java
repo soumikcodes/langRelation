@@ -1,19 +1,17 @@
 import javafx.application.Application;
-import javafx.embed.swing.JFXPanel;
-import javafx.stage.Stage;
-import javafx.scene.*;
-import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Line;
-import javafx.scene.Node;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.embed.swing.JFXPanel;
+import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.stage.Stage;
 
 public class GraphApp extends Application {
-    
+
     private double startX;
     private double startY;
-    private Line connectionLine = new Line();
     private Pane root;
 
     public GraphApp() {
@@ -23,43 +21,30 @@ public class GraphApp extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-    	stage.setTitle("Language Relation");
+        stage.setTitle("Language Relation");
     }
-    
-    // Method to generate a random color
+
     private Color randomColor() {
         double red = Math.random();
         double green = Math.random();
         double blue = Math.random();
-        return new Color(red, green, blue, 1.0); // Fully opaque color
+        return new Color(red, green, blue, 1.0);
     }
-    
-    public void addNode(JFXPanel fxPanel) {
-    	
-    	// Create a new LanguageNode each time this method is called
-        LanguageNode newNode = new LanguageNode(25, Math.random() * 50, randomColor(), "IE");
 
-        // Add the new node to the pane
+    public void addNode(JFXPanel fxPanel) {
+        LanguageNode newNode = new LanguageNode(25, Math.random() * (fxPanel.getWidth()/2), randomColor(), "IE");
         root.getChildren().addAll(newNode);
         makeDraggable(newNode);
-        
-        // Add the connection line to the pane if not already added
-        if (!root.getChildren().contains(connectionLine)) {
-            connectionLine.setStroke(Color.BLUE);
-            connectionLine.setStrokeWidth(2);
-            root.getChildren().add(connectionLine);
-        }
 
-        // Only set the scene if it's not already set in the JFXPanel
         if (fxPanel.getScene() == null) {
             fxPanel.setScene(new Scene(root));
         }
         System.out.println("Number of children: " + root.getChildren().size());
-        
-//        newNode.setOnMouseClicked(e -> {
-//        	if(e.getClickCount() == 1)
-//        		addNode(fxPanel);
-//        });
+
+        newNode.setOnMouseClicked(e -> {
+            if (e.getClickCount() == 1)
+                addNode(fxPanel);
+        });
     }
 
     private void makeDraggable(Node node) {
@@ -74,7 +59,7 @@ public class GraphApp extends Application {
             checkAndConnect(node);
         });
     }
-    
+
     private void checkAndConnect(Node selectedNode) {
         double threshold = 100.0;
 
@@ -85,13 +70,15 @@ public class GraphApp extends Application {
         LanguageNode draggedCircle = (LanguageNode) selectedNode;
         ObservableList<Node> nodes = draggedCircle.getParent().getChildrenUnmodifiable();
         ObservableList<Node> circles = FXCollections.observableArrayList();
-        
-        // Filter only LanguageNode instances
+
         for (Node item : nodes) {
             if (item instanceof LanguageNode) {
                 circles.add(item);
             }
         }
+
+        // Remove any existing connection lines associated with this node
+        root.getChildren().removeIf(node -> node instanceof ConnectionLine && ((ConnectionLine) node).getFamily().equals(draggedCircle.getFamily()));
 
         for (Node node : circles) {
             LanguageNode otherCircle = (LanguageNode) node;
@@ -111,17 +98,15 @@ public class GraphApp extends Application {
                 double distance = Math.sqrt(dx * dx + dy * dy);
 
                 if (distance < threshold) {
-                    connectionLine.setStartX(centerX1);
-                    connectionLine.setStartY(centerY1);
-                    connectionLine.setEndX(centerX2);
-                    connectionLine.setEndY(centerY2);
-                    connectionLine.setVisible(true);
-                    return;
+                    ConnectionLine line = new ConnectionLine(draggedCircle.getFamily());
+                    line.setStartX(centerX1);
+                    line.setStartY(centerY1);
+                    line.setEndX(centerX2);
+                    line.setEndY(centerY2);
+                    root.getChildren().add(line);
                 }
             }
         }
-
-        connectionLine.setVisible(false);
     }
 
     public static void main(String[] args) {
