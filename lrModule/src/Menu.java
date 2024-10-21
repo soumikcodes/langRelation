@@ -65,7 +65,7 @@ public class Menu extends JComponent {
     private final int delay = 100;
 
 
-    public Menu(Home home, Runnable addLanguageAction) {
+    public Menu(Home home) {
         this.home = home;
 
         setBackground(new Color(20, 176, 211));
@@ -101,7 +101,7 @@ public class Menu extends JComponent {
         animator.setDeceleration(0.5f);
 
         RadialItem languageItem = new RadialItem(null, new Color(230, 130, 240));
-        languageItem.setAction(addLanguageAction);
+//        languageItem.setAction(addLanguageAction);
 
         addItem(new RadialItem(null, new Color(245, 209, 140)));
         addItem(languageItem);

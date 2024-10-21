@@ -30,10 +30,39 @@ public class GraphApp extends Application {
         double blue = Math.random();
         return new Color(red, green, blue, 1.0);
     }
+    
+    private String setFamily(String language) {
+    	String fam = "";
+    	if(language == "English")
+    		fam = "Germanic";
+    	if(language == "Kazakh")
+    		fam = "Indo-European";
+    	if(language == "French")
+    		fam = "Italic";
+    	if(language == "Russian")
+    		fam = "Balto-Slavic";
+    	if(language == "Hindi")
+    		fam = "Indo-Aryan";
+    	if(language == "German")
+    		fam = "Germanic";
+    	if(language == "Bengali")
+    		fam = "Indo-Aryan";
+    	if(language == "Czech")
+    		fam = "Balto-Slavic";
+    	if(language == "Spanish")
+    		fam = "Italic";
+    	if(language == "Afrikaans")
+    		fam = "Germanic";
+    	if(language == "Portuguese")
+    		fam = "Italic";
+    	
+    	return fam;
+    }
 
-    public void addNode(JFXPanel fxPanel) {
-        LanguageNode newNode = new LanguageNode(25, Math.random() * (fxPanel.getWidth()/2), randomColor(), "IE");
-        root.getChildren().addAll(newNode);
+    public void addNode(String language, JFXPanel fxPanel) {
+        LanguageNode newNode = new LanguageNode(35, Math.random() * (fxPanel.getWidth()/2), randomColor(), setFamily(language), language);
+        System.out.println(newNode.getProperties());
+        root.getChildren().addAll(newNode, newNode.getLabel());
         makeDraggable(newNode);
 
         if (fxPanel.getScene() == null) {
@@ -42,12 +71,12 @@ public class GraphApp extends Application {
         System.out.println("Number of children: " + root.getChildren().size());
 
         newNode.setOnMouseClicked(e -> {
-            if (e.getClickCount() == 1)
-                addNode(fxPanel);
+            if (e.getClickCount() == 2)
+                addNode(language, fxPanel);
         });
     }
 
-    private void makeDraggable(Node node) {
+    private void makeDraggable(LanguageNode node) {
         node.setOnMousePressed(e -> {
             startX = e.getSceneX() - node.getTranslateX();
             startY = e.getSceneY() - node.getTranslateY();
@@ -56,12 +85,15 @@ public class GraphApp extends Application {
         node.setOnMouseDragged(e -> {
             node.setTranslateX(e.getSceneX() - startX);
             node.setTranslateY(e.getSceneY() - startY);
+            node.getLabel().setLayoutX(node.getTranslateX() + node.getRadius());
+            node.getLabel().setLayoutY(node.getTranslateY() + node.getRadius());
+            
             checkAndConnect(node);
         });
     }
 
     private void checkAndConnect(Node selectedNode) {
-        double threshold = 100.0;
+        double threshold = 500.0;
 
         if (!(selectedNode instanceof LanguageNode)) {
             return;
@@ -77,8 +109,9 @@ public class GraphApp extends Application {
             }
         }
 
-        // Remove any existing connection lines associated with this node
-        root.getChildren().removeIf(node -> node instanceof ConnectionLine && ((ConnectionLine) node).getFamily().equals(draggedCircle.getFamily()));
+        // Remove any existing connection lines and their labels associated with this node
+        root.getChildren().removeIf(node -> node instanceof ConnectionLine 
+            && ((ConnectionLine) node).getFamily().equals(draggedCircle.getFamily()));
 
         for (Node node : circles) {
             LanguageNode otherCircle = (LanguageNode) node;
@@ -87,7 +120,8 @@ public class GraphApp extends Application {
                 continue;
             }
 
-            if (draggedCircle.getFamily() != null && draggedCircle.getFamily().equals(otherCircle.getFamily())) {
+            if (draggedCircle.getFamily() != null && draggedCircle.getFamily().equals(otherCircle.getFamily())
+            		&& draggedCircle.getLanguageName() != otherCircle.getLanguageName()) {
                 double centerX1 = draggedCircle.getLayoutX() + draggedCircle.getTranslateX() + draggedCircle.getRadius();
                 double centerY1 = draggedCircle.getLayoutY() + draggedCircle.getTranslateY() + draggedCircle.getRadius();
                 double centerX2 = otherCircle.getLayoutX() + otherCircle.getTranslateX() + otherCircle.getRadius();
@@ -103,7 +137,8 @@ public class GraphApp extends Application {
                     line.setStartY(centerY1);
                     line.setEndX(centerX2);
                     line.setEndY(centerY2);
-                    root.getChildren().add(line);
+                    line.updateLabelPosition();
+                    root.getChildren().addAll(line, line.getLabel());
                 }
             }
         }

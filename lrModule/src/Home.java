@@ -1,3 +1,4 @@
+import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 
 import javax.swing.*;
@@ -22,7 +23,7 @@ public class Home {
         frame.setPreferredSize(new Dimension(800, 600));
         frame.setMinimumSize(new Dimension(800, 400));
 
-        Menu radialMenu = new Menu(this, this::addLanguage);
+        Menu radialMenu = new Menu(this);
 
         JPanel menuPanel = new JPanel(new BorderLayout());
         menuPanel.setBackground(Color.WHITE);
@@ -44,11 +45,13 @@ public class Home {
         frame.setVisible(true);
     }
 
-    public void addLanguage() {
-        frame.add(fxPanel, BorderLayout.CENTER);
-        graph.addNode(fxPanel);
+    public void addLanguage(String language) {
+    	if (fxPanel.getParent() == null) {
+            frame.add(fxPanel, BorderLayout.CENTER);
+        }
+        Platform.runLater(() -> graph.addNode(language, fxPanel));
 
-        statusBar.setText("Graph added.");
+        statusBar.setText("Graph added. Double click on a node to duplicate");
     }
 
     private JPopupMenu getDropdownMenu() {
@@ -59,6 +62,12 @@ public class Home {
         JMenuItem russian = new JMenuItem("Russian");
         JMenuItem hindi = new JMenuItem("Hindi");
         JMenuItem german = new JMenuItem("German");
+        JMenuItem bengali = new JMenuItem("Bengali");
+        JMenuItem czech = new JMenuItem("Czech");
+        JMenuItem spanish = new JMenuItem("Spanish");
+        JMenuItem afrikaans = new JMenuItem("Afrikaans");
+        JMenuItem portuguese = new JMenuItem("Portuguese");
+        
 
         dropdownMenu.add(english);
         dropdownMenu.add(kazakh);
@@ -66,13 +75,23 @@ public class Home {
         dropdownMenu.add(russian);
         dropdownMenu.add(hindi);
         dropdownMenu.add(german);
+        dropdownMenu.add(bengali);
+        dropdownMenu.add(czech);
+        dropdownMenu.add(spanish);
+        dropdownMenu.add(afrikaans);
+        dropdownMenu.add(portuguese);
 
-        english.addActionListener(e -> addLanguage());
-        kazakh.addActionListener(e -> addLanguage());
-        french.addActionListener(e -> addLanguage());
-        russian.addActionListener(e -> addLanguage());
-        hindi.addActionListener(e -> addLanguage());
-        german.addActionListener(e -> addLanguage());
+        english.addActionListener(e -> addLanguage("English"));
+        kazakh.addActionListener(e -> addLanguage("Kazakh"));
+        french.addActionListener(e -> addLanguage("French"));
+        russian.addActionListener(e -> addLanguage("Russian"));
+        hindi.addActionListener(e -> addLanguage("Hindi"));
+        german.addActionListener(e -> addLanguage("German"));
+        bengali.addActionListener(e -> addLanguage("Bengali"));
+        czech.addActionListener(e -> addLanguage("Czech"));
+        spanish.addActionListener(e -> addLanguage("Spanish"));
+        afrikaans.addActionListener(e -> addLanguage("Afrikaans"));
+        portuguese.addActionListener(e -> addLanguage("Portuguese"));
         return dropdownMenu;
     }
 
