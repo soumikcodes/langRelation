@@ -4,24 +4,32 @@ import javafx.collections.ObservableList;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class GraphApp extends Application {
 
     private double startX;
     private double startY;
     private Pane root;
+    private LanguageNode selectedNode;
+    private Map<String, ConnectionLine> connectionMap;
 
     public GraphApp() {
         root = new Pane();
         root.setPrefSize(800, 600);
+        connectionMap = new HashMap<>();
     }
 
     @Override
     public void start(Stage stage) throws Exception {
-        stage.setTitle("Language Relation");
+    	stage.setTitle("Language Relation");
     }
 
     private Color randomColor() {
@@ -30,38 +38,21 @@ public class GraphApp extends Application {
         double blue = Math.random();
         return new Color(red, green, blue, 1.0);
     }
-    
+
     private String setFamily(String language) {
-    	String fam = "";
-    	if(language == "English")
-    		fam = "Germanic";
-    	if(language == "Kazakh")
-    		fam = "Indo-European";
-    	if(language == "French")
-    		fam = "Italic";
-    	if(language == "Russian")
-    		fam = "Balto-Slavic";
-    	if(language == "Hindi")
-    		fam = "Indo-Aryan";
-    	if(language == "German")
-    		fam = "Germanic";
-    	if(language == "Bengali")
-    		fam = "Indo-Aryan";
-    	if(language == "Czech")
-    		fam = "Balto-Slavic";
-    	if(language == "Spanish")
-    		fam = "Italic";
-    	if(language == "Afrikaans")
-    		fam = "Germanic";
-    	if(language == "Portuguese")
-    		fam = "Italic";
-    	
-    	return fam;
+    	return switch (language) {
+        case "English", "German", "Afrikaans" -> "Germanic";
+        case "Kazakh" -> "Indo-European";
+        case "French", "Spanish", "Portuguese" -> "Italic";
+        case "Russian", "Czech" -> "Balto-Slavic";
+        case "Hindi", "Bengali", "Persian" -> "Indo-Aryan";
+        default -> "";
+    	};
     }
 
     public void addNode(String language, JFXPanel fxPanel) {
-        LanguageNode newNode = new LanguageNode(35, Math.random() * (fxPanel.getWidth()/2), randomColor(), setFamily(language), language);
-        System.out.println(newNode.getProperties());
+        LanguageNode newNode = new LanguageNode(35, Math.random() * (fxPanel.getWidth() / 2), randomColor(), setFamily(language), language);
+        System.out.println("+++Add node: " + newNode.getProperties());
         root.getChildren().addAll(newNode, newNode.getLabel());
         makeDraggable(newNode);
 
@@ -70,9 +61,30 @@ public class GraphApp extends Application {
         }
         System.out.println("Number of children: " + root.getChildren().size());
 
+        // Duplicate node
         newNode.setOnMouseClicked(e -> {
             if (e.getClickCount() == 2)
                 addNode(language, fxPanel);
+        });
+        
+        // deleting the node with the delete key
+        fxPanel.getScene().setOnKeyPressed(e -> {
+            if (e.getCode() == KeyCode.DELETE && selectedNode != null) {
+            	System.out.println("---" + selectedNode.getLanguageName() + " Node Delete");
+                deleteNode(selectedNode);
+                selectedNode = null;
+            }
+        });
+        
+        //click anywhere on the scene to deselect node
+        fxPanel.getScene().setOnMouseClicked(e -> {
+            if (e.getButton() == MouseButton.PRIMARY) {
+                // Check if the click target is not a LanguageNode
+                if (!(e.getTarget() instanceof LanguageNode) && selectedNode != null) {
+                    selectedNode.setStroke(Color.BLACK);
+                    selectedNode = null; // Clear the reference to the selected node
+                }
+            }
         });
     }
 
@@ -80,6 +92,12 @@ public class GraphApp extends Application {
         node.setOnMousePressed(e -> {
             startX = e.getSceneX() - node.getTranslateX();
             startY = e.getSceneY() - node.getTranslateY();
+            if (selectedNode != null) {
+                selectedNode.setStroke(Color.BLACK);
+            }
+            selectedNode = node;
+            Color highlight = Color.rgb(112, 215, 255);
+            node.setStroke(highlight);
         });
 
         node.setOnMouseDragged(e -> {
@@ -87,13 +105,13 @@ public class GraphApp extends Application {
             node.setTranslateY(e.getSceneY() - startY);
             node.getLabel().setLayoutX(node.getTranslateX() + node.getRadius());
             node.getLabel().setLayoutY(node.getTranslateY() + node.getRadius());
-            
+
             checkAndConnect(node);
         });
     }
 
     private void checkAndConnect(Node selectedNode) {
-        double threshold = 500.0;
+        double threshold = 200.0;
 
         if (!(selectedNode instanceof LanguageNode)) {
             return;
@@ -110,8 +128,14 @@ public class GraphApp extends Application {
         }
 
         // Remove any existing connection lines and their labels associated with this node
-        root.getChildren().removeIf(node -> node instanceof ConnectionLine 
-            && ((ConnectionLine) node).getFamily().equals(draggedCircle.getFamily()));
+        connectionMap.entrySet().removeIf(entry -> {
+            ConnectionLine line = entry.getValue();
+            if (line.getFamily().equals(draggedCircle.getFamily())) {
+                root.getChildren().removeAll(line, line.getLabel());
+                return true;
+            }
+            return false;
+        });
 
         for (Node node : circles) {
             LanguageNode otherCircle = (LanguageNode) node;
@@ -121,7 +145,7 @@ public class GraphApp extends Application {
             }
 
             if (draggedCircle.getFamily() != null && draggedCircle.getFamily().equals(otherCircle.getFamily())
-            		&& draggedCircle.getLanguageName() != otherCircle.getLanguageName()) {
+                    && !draggedCircle.getLanguageName().equals(otherCircle.getLanguageName())) {
                 double centerX1 = draggedCircle.getLayoutX() + draggedCircle.getTranslateX() + draggedCircle.getRadius();
                 double centerY1 = draggedCircle.getLayoutY() + draggedCircle.getTranslateY() + draggedCircle.getRadius();
                 double centerX2 = otherCircle.getLayoutX() + otherCircle.getTranslateX() + otherCircle.getRadius();
@@ -132,16 +156,33 @@ public class GraphApp extends Application {
                 double distance = Math.sqrt(dx * dx + dy * dy);
 
                 if (distance < threshold) {
+                    String connectionKey = draggedCircle.getLanguageName() + "-" + otherCircle.getLanguageName();
                     ConnectionLine line = new ConnectionLine(draggedCircle.getFamily());
                     line.setStartX(centerX1);
                     line.setStartY(centerY1);
                     line.setEndX(centerX2);
                     line.setEndY(centerY2);
                     line.updateLabelPosition();
+                    connectionMap.put(connectionKey, line);
                     root.getChildren().addAll(line, line.getLabel());
                 }
             }
         }
+    }
+
+    private void deleteNode(LanguageNode node) {
+        // Remove the node and its label
+        root.getChildren().removeAll(node, node.getLabel());
+
+        // Remove all connections related to the node
+        connectionMap.entrySet().removeIf(entry -> {
+            ConnectionLine line = entry.getValue();
+            if (line.getFamily().equals(node.getFamily())) {
+                root.getChildren().removeAll(line, line.getLabel());
+                return true;
+            }
+            return false;
+        });
     }
 
     public static void main(String[] args) {

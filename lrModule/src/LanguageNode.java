@@ -1,4 +1,3 @@
-import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
@@ -17,7 +16,7 @@ public class LanguageNode extends Circle {
         this.languageName = languageName;
         this.setStroke(Color.BLACK);
         this.relocate(loc, loc);
-        this.setStrokeWidth(5);
+        this.setStrokeWidth(2);
         this.getProperties().put("family", family);
         this.getProperties().put("name", languageName);
 

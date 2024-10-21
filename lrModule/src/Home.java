@@ -51,7 +51,13 @@ public class Home {
         }
         Platform.runLater(() -> graph.addNode(language, fxPanel));
 
-        statusBar.setText("Graph added. Double click on a node to duplicate");
+        statusBar.setText("Graph added.");
+//        Features:
+//        	1. Click on plus icon to add language node
+//        	2. Drag the nodes close to each other to connect them based on common family
+//        	3. Click on a node and press on delete to delete the node and its associated connections
+//        	4. Double click on a node to duplicate it.
+//        	5. Click anywhere outside to deselect a node
     }
 
     private JPopupMenu getDropdownMenu() {
@@ -67,6 +73,7 @@ public class Home {
         JMenuItem spanish = new JMenuItem("Spanish");
         JMenuItem afrikaans = new JMenuItem("Afrikaans");
         JMenuItem portuguese = new JMenuItem("Portuguese");
+        JMenuItem persian = new JMenuItem("Persian");
         
 
         dropdownMenu.add(english);
@@ -80,6 +87,7 @@ public class Home {
         dropdownMenu.add(spanish);
         dropdownMenu.add(afrikaans);
         dropdownMenu.add(portuguese);
+        dropdownMenu.add(persian);
 
         english.addActionListener(e -> addLanguage("English"));
         kazakh.addActionListener(e -> addLanguage("Kazakh"));
@@ -92,6 +100,7 @@ public class Home {
         spanish.addActionListener(e -> addLanguage("Spanish"));
         afrikaans.addActionListener(e -> addLanguage("Afrikaans"));
         portuguese.addActionListener(e -> addLanguage("Portuguese"));
+        persian.addActionListener(e -> addLanguage("Persian"));
         return dropdownMenu;
     }
 
