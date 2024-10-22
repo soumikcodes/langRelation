@@ -56,6 +56,8 @@ public class Menu extends JComponent {
     private Color iconColor;
     private Color iconHoverColor;
     private int plusIndex;
+    private int quitIndex;
+    private int infoIndex;
     private float menuAngle = -150f;
     private int startingAngle = 60;
 
@@ -92,6 +94,7 @@ public class Menu extends JComponent {
                 if (!isShowing) {
                     home.dropdownHide();
                 }
+                repaint();
             }
         };
 
@@ -100,19 +103,24 @@ public class Menu extends JComponent {
         animator.setAcceleration(0.5f);
         animator.setDeceleration(0.5f);
 
-        RadialItem languageItem = new RadialItem(null, new Color(230, 130, 240));
+        RadialItem languageItem = new RadialItem(null, new Color(230, 130, 240), "Add Language");
+        RadialItem quitItem = new RadialItem(null, new Color(140, 245, 146), "Quit");
+        RadialItem infoItem = new RadialItem(null, new Color(245, 209, 140), "Information");
 //        languageItem.setAction(addLanguageAction);
 
-        addItem(new RadialItem(null, new Color(245, 209, 140)));
+        addItem(quitItem);
         addItem(languageItem);
-        addItem(new RadialItem(null, new Color(140, 245, 146)));
+        addItem(infoItem);
 
         plusIndex = items.indexOf(languageItem);
+        quitIndex = items.indexOf(quitItem);
+        infoIndex = items.indexOf(infoItem);
 
         addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
                 if (SwingUtilities.isLeftMouseButton(e)) {
+                    home.menuClicked();
                     isMouseOver = isMouseOverMenu(e);
                     if (isMouseOver) {
                         if (!animator.isRunning()) {
@@ -135,6 +143,18 @@ public class Menu extends JComponent {
                         home.showDropdownMenu(screenX, screenY);
                     } else {
                         int index = isMouseOverItem(e);
+                        if (index == quitIndex) {
+                            int response = JOptionPane.showConfirmDialog(null,
+                                    "Are you sure you want to quit?",
+                                    "Confirm Exit",
+                                    JOptionPane.YES_NO_OPTION,
+                                    JOptionPane.WARNING_MESSAGE);
+
+                            // If the user clicks "Yes", exit the application
+                            if (response == JOptionPane.YES_OPTION) {
+                                System.exit(0);
+                            }
+                        }
                         if (index >= 0) {
                             System.out.println("Selected index: " + index);
                         }
@@ -148,6 +168,11 @@ public class Menu extends JComponent {
             public void mouseMoved(MouseEvent e) {
                 boolean overMenu = isMouseOverMenu(e);
                 int hoverIndex = isMouseOverItem(e);
+
+                if (overMenu != isMouseOver) {
+                    isMouseOver = overMenu;
+                    repaint();
+                }
 
                 if (hoverIndex >= 0) {
                     isHoverOverPlus = (hoverIndex == plusIndex);
@@ -168,7 +193,7 @@ public class Menu extends JComponent {
                         Point point = calculatePlusButtonLocation();
                         home.showDropdownMenu(point.x, point.y);
                     }
-
+                    home.menuClicked();
                 } else {
                     setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
                     if (!animator.isRunning() && isShowing) {
@@ -230,6 +255,14 @@ public class Menu extends JComponent {
                 int itemX = centerX + location.x - itemSize / 2;
                 int itemY = centerY + location.y - itemSize / 2;
                 g2.fillOval(itemX, itemY, itemSize, itemSize);
+
+                // Draw the item name
+                if (isShowing) {
+                    String itemName = item.getName();
+                    g2.setFont(new Font("Georgia", Font.BOLD, 14));
+                    g2.setColor(Color.decode("#d9d7d7"));
+                    g2.drawString(itemName, itemX + 40, itemY + 22);
+                }
                 // Create Icon
 //                int iconX = itemX + ((itemSize - item.getIcon().getIconWidth())/2);
 //                int iconY = itemY + ((itemSize - item.getIcon().getIconHeight())/2);
@@ -249,6 +282,34 @@ public class Menu extends JComponent {
                     g2.drawLine(itemX + itemSize / 2, itemY + itemSize / 2 - plusSize,
                             itemX + itemSize / 2, itemY + itemSize / 2 + plusSize);
                 }
+
+                if (i == quitIndex) {
+                    int crossSize  = itemSize / 6;
+                    float thickness = 3.0f;
+
+                    g2.setStroke(new BasicStroke(thickness));
+                    g2.setColor(iconColor);
+                    g2.drawLine(itemX + itemSize / 2 - crossSize, itemY + itemSize / 2 - crossSize,
+                            itemX + itemSize / 2 + crossSize, itemY + itemSize / 2 + crossSize);
+                    g2.drawLine(itemX + itemSize / 2 - crossSize, itemY + itemSize / 2 + crossSize,
+                            itemX + itemSize / 2 + crossSize, itemY + itemSize / 2 - crossSize);
+                }
+
+                if (i == infoIndex) {
+                    Font font = new Font("Arial", Font.BOLD, itemSize / 2);  // Adjust the font size relative to itemSize
+                    g2.setFont(font);
+                    g2.setColor(iconColor);
+
+                    FontMetrics metrics = g2.getFontMetrics(font);
+                    int stringWidth = metrics.stringWidth("?");
+                    int stringHeight = metrics.getAscent();
+
+                    int questionX = itemX + (itemSize - stringWidth) / 2;
+                    int questionY = itemY + ((itemSize - stringHeight) / 2) + stringHeight;
+
+                    g2.drawString("?", questionX, questionY);
+                }
+
             }
         }
 
