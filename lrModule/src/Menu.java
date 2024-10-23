@@ -88,7 +88,7 @@ public class Menu extends JComponent {
                 repaint();
             }
 
-          @Override
+            @Override
             public void end() {
                 isShowing = !isShowing;
                 if (!isShowing) {
@@ -120,7 +120,7 @@ public class Menu extends JComponent {
             @Override
             public void mousePressed(MouseEvent e) {
                 if (SwingUtilities.isLeftMouseButton(e)) {
-                    home.menuClicked();
+                    home.manageMenuHint();
                     isMouseOver = isMouseOverMenu(e);
                     if (isMouseOver) {
                         if (!animator.isRunning()) {
@@ -193,7 +193,7 @@ public class Menu extends JComponent {
                         Point point = calculatePlusButtonLocation();
                         home.showDropdownMenu(point.x, point.y);
                     }
-                    home.menuClicked();
+                    home.manageMenuHint();
                 } else {
                     setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
                     if (!animator.isRunning() && isShowing) {
@@ -211,7 +211,7 @@ public class Menu extends JComponent {
                         closeTimer.restart();
                     }
 
-                	 if (overMenu != isMouseOver || (hoverIndex == plusIndex) == isHoverOverPlus) {
+                    if (overMenu != isMouseOver || (hoverIndex == plusIndex) == isHoverOverPlus) {
                         isMouseOver = overMenu;
                         repaint();
                     }
