@@ -21,7 +21,7 @@ public class Home {
         menuHintLabel = getMenuHintLabel();
         dropdownMenu = getDropdownMenu();
         welcomeMessage = getWelcomeMessage();
-        Menu radialMenu = new Menu(this);
+        RadialMenu radialMenu = new RadialMenu(this);
 
         frame = new JFrame("Language Relation");
         frame.getContentPane().setBackground(Color.WHITE);

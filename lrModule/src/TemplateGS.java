@@ -24,8 +24,6 @@ public class TemplateGS {
         Viewer viewer = myGraph.display(false);
         View view = viewer.getDefaultView();
 
-//        Edge theedge = myGraph.addEdge("u--v", u.getId(),v.getId(), true);
-//        viewPanel = (ViewPanel) viewer.addDefaultView(false);
         viewer.getDefaultView().enableMouseOptions();
         
         u.setAttribute("ui.label", "u");
@@ -35,20 +33,12 @@ public class TemplateGS {
         myGraph.setAttribute("ui.quality");
         myGraph.setAttribute("ui.antialias");
         myGraph.display(true);
-        
-//        for(Node n:myGraph) {
-//        	
-//        }
-        
-//        view.getCamera().setViewCenter(0, 0, 0);
-//        addMouseListeners(viewPanel);
     }
 
     
     public static void main(String[] args) {
     	System.setProperty("org.graphstream.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
         System.setProperty("org.graphstream.ui", "swing");
-//        new TemplateGS();
     }
     
     private void addMouseListeners(ViewPanel panel) {
